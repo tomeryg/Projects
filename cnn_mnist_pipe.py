@@ -18,7 +18,7 @@ dropout2 = 0.4
 epochs = 10
 
 
-def convert_back(data_type,buffer_size,record_file,val_percentage=0.1, channels =1, img_size = (28,28)):
+def convert_back(data_type,buffer_size,record_file,val_percentage=0.1, test_percentage = 0.1, channels =1, img_size = (28,28)):
 # converts the tfrecords files to images and labels and returns the parsed dataset
     def _parse_image_function(example_proto):
         # Parse the input tf.Example proto using the dictionary above.
@@ -44,6 +44,8 @@ def convert_back(data_type,buffer_size,record_file,val_percentage=0.1, channels 
     num_parallel_batches = 2
     if data_type == 'val':
         buffer = int(buffer_size * val_percentage)
+    elif data_type == 'test':
+        buffer = int(buffer_size * test_percentage)
     else:
         buffer = buffer_size
     raw_image_dataset = tf.data.TFRecordDataset(data_type+ '_' + record_file)
@@ -55,9 +57,11 @@ def convert_back(data_type,buffer_size,record_file,val_percentage=0.1, channels 
 
 
 
-_, _, buffer_size = for_val(training_folder_path, record_file, val_percentage=0.1,numbers=10)
+_, _,_, buffer_size = randomize_data(folder_path, record_file, val_percentage, test_percentage, class_num)
 val_ds = convert_back('val',buffer_size = buffer_size, record_file = record_file)
 train_ds = convert_back('train',buffer_size = buffer_size, record_file = record_file)
+test_ds = convert_back('test',buffer_size = buffer_size, record_file = record_file)
+
 
 #sanity check - check if your dataset is in the correct shape
 if test:
@@ -77,7 +81,9 @@ model.add(Dense(last_dense, activation = 'softmax'))
 
 model.compile(optimizer = 'adam', metrics = ['sparse_categorical_accuracy'], loss = 'sparse_categorical_crossentropy')
 
-model.fit(train_ds, epochs=10, validation_data = val_ds)
+model.fit(train_ds, epochs, validation_data = val_ds)
+
+model.evaluate(test_ds)
 
 
 
