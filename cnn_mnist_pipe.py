@@ -56,34 +56,34 @@ def convert_back(data_type,buffer_size,record_file,val_percentage=0.1, test_perc
     return parsed_image_dataset
 
 
+if __name__ == '__main__':
+    _, _,_, buffer_size = randomize_data(folder_path, record_file, val_percentage, test_percentage, class_num)
+    val_ds = convert_back('val',buffer_size = buffer_size, record_file = record_file)
+    train_ds = convert_back('train',buffer_size = buffer_size, record_file = record_file)
+    test_ds = convert_back('test',buffer_size = buffer_size, record_file = record_file)
 
-_, _,_, buffer_size = randomize_data(folder_path, record_file, val_percentage, test_percentage, class_num)
-val_ds = convert_back('val',buffer_size = buffer_size, record_file = record_file)
-train_ds = convert_back('train',buffer_size = buffer_size, record_file = record_file)
-test_ds = convert_back('test',buffer_size = buffer_size, record_file = record_file)
 
-
-#sanity check - check if your dataset is in the correct shape
-if test:
-    for image, label in train_ds.take(1):
-        print(image.shape, label.shape)
+    #sanity check - check if your dataset is in the correct shape
+    if test:
+        for image, label in train_ds.take(1):
+            print(image.shape, label.shape)
         
-#build the cnn model
-model = tf.keras.Sequential()
-model.add(Conv2D(filters, kernel_size = kernels, padding = 'same', input_shape = (28,28,1)))
-model.add(MaxPooling2D(pool_size = pools, padding = 'same'))
-model.add(Flatten())
-model.add(Dense(dense1, activation = 'relu'))
-model.add(Dropout(dropout1))
-model.add(Dense(dense2, activation = 'relu'))
-model.add(Dropout(dropout2))
-model.add(Dense(last_dense, activation = 'softmax'))
+    #build the cnn model
+    model = tf.keras.Sequential()
+    model.add(Conv2D(filters, kernel_size = kernels, padding = 'same', input_shape = (28,28,1)))
+    model.add(MaxPooling2D(pool_size = pools, padding = 'same'))
+    model.add(Flatten())
+    model.add(Dense(dense1, activation = 'relu'))
+    model.add(Dropout(dropout1))
+    model.add(Dense(dense2, activation = 'relu'))
+    model.add(Dropout(dropout2))
+    model.add(Dense(last_dense, activation = 'softmax'))
 
-model.compile(optimizer = 'adam', metrics = ['sparse_categorical_accuracy'], loss = 'sparse_categorical_crossentropy')
+    model.compile(optimizer = 'adam', metrics = ['sparse_categorical_accuracy'], loss = 'sparse_categorical_crossentropy')
 
-model.fit(train_ds, epochs, validation_data = val_ds)
+    model.fit(train_ds, epochs, validation_data = val_ds)
 
-model.evaluate(test_ds)
+    model.evaluate(test_ds)
 
 
 
