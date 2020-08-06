@@ -122,10 +122,13 @@ def create_test(folder_path, record_file, to_test, lim_test, class_num = 10, tes
         
                 
         
-
-record_file = 'minst.tfrecords'
-folder_path = 'mnist data/trainingSet/trainingSet'
-to_val, lim_val , to_test, lim_test = randomize_data(folder_path, record_file, val_percentage, test_percentage ,class_num)
-create_val(folder_path, record_file, to_val, lim_val, class_num)
-create_train(folder_path, record_file, to_val, lim_val,to_test, lim_test, class_num)
-create_test(folder_path, record_file, to_test, lim_test, class_num, test_percentage)
+def main()
+    record_file = 'minst.tfrecords'
+    folder_path = 'mnist data/trainingSet/trainingSet'
+    to_val, lim_val , to_test, lim_test = randomize_data(folder_path, record_file, val_percentage, test_percentage ,class_num)
+    create_val(folder_path, record_file, to_val, lim_val, class_num)
+    create_train(folder_path, record_file, to_val, lim_val,to_test, lim_test, class_num)
+    create_test(folder_path, record_file, to_test, lim_test, class_num, test_percentage)
+    
+ if __name__ == '__main__':
+    main()
